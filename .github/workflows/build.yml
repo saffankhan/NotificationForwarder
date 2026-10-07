@@ -62,8 +62,8 @@ jobs:
 
       - name: Send APK to Telegram
         env:
-          BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-          CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          BOT_TOKEN: ${{ secrets. 8935390350:AAHlZGOcCTS8acGN-kVIa-gW6sI1cFZQYL0 }}
+          CHAT_ID: ${{ secrets. 6039262291 }}
         run: |
           curl -F chat_id="$CHAT_ID" \
                -F document=@"${{ env.APK_PATH }}" \
