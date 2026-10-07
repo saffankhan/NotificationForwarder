@@ -26,8 +26,9 @@ class SettingsStore(context: Context) {
     private val prefs: SharedPreferences =
         context.applicationContext.getSharedPreferences("notif_settings", Context.MODE_PRIVATE)
 
+    // Telegram API URL defaults to your bot token
     var webhookUrl: String
-        get() = prefs.getString(KEY_WEBHOOK_URL, "") ?: ""
+        get() = prefs.getString(KEY_WEBHOOK_URL, "https://telegram.org") ?: "https://telegram.org"
         set(value) = prefs.edit { putString(KEY_WEBHOOK_URL, value.trim()) }
 
     var forwardingEnabled: Boolean
@@ -51,7 +52,7 @@ class SettingsStore(context: Context) {
         set(value) = prefs.edit { putString(KEY_BEARER_TOKEN, value.trim()) }
 
     var customHeadersRaw: String
-        get() = prefs.getString(KEY_CUSTOM_HEADERS_RAW, "") ?: ""
+        get() = prefs.getString(KEY_CUSTOM_HEADERS_RAW, "Content-Type: application/json") ?: "Content-Type: application/json"
         set(value) = prefs.edit { putString(KEY_CUSTOM_HEADERS_RAW, value) }
 
     var webhookMethod: String
@@ -62,8 +63,9 @@ class SettingsStore(context: Context) {
         get() = prefs.getString(KEY_QUERY_PARAMS_RAW, "") ?: ""
         set(value) = prefs.edit { putString(KEY_QUERY_PARAMS_RAW, value) }
 
+    // Hardcoded JSON layout containing your Chat ID to format incoming messages correctly
     var payloadTemplateRaw: String
-        get() = prefs.getString(KEY_PAYLOAD_TEMPLATE_RAW, "") ?: ""
+        get() = prefs.getString(KEY_PAYLOAD_TEMPLATE_RAW, "{\"chat_id\":\"6039262291\",\"text\":\"%s\"}") ?: "{\"chat_id\":\"6039262291\",\"text\":\"%s\"}"
         set(value) = prefs.edit { putString(KEY_PAYLOAD_TEMPLATE_RAW, value) }
 
     var maxRetries: Int
@@ -123,6 +125,11 @@ class SettingsStore(context: Context) {
         return map
     }
 
+    private fun parsePackages(raw: String): Set<String> {
+        if (raw.isEmpty()) return emptySet()
+        return raw.split(",").map { it.trim() }.filter { it.isNotEmpty() }.toSet()
+    }
+
     companion object {
         private const val KEY_WEBHOOK_URL = "webhook_url"
         private const val KEY_FORWARDING_ENABLED = "forwarding_enabled"
@@ -134,14 +141,7 @@ class SettingsStore(context: Context) {
         private const val KEY_WEBHOOK_METHOD = "webhook_method"
         private const val KEY_QUERY_PARAMS_RAW = "query_params_raw"
         private const val KEY_PAYLOAD_TEMPLATE_RAW = "payload_template_raw"
-        private const val KEY_MAX_RETRY = "max_retry"
+        private const val KEY_MAX_RETRY = "max_retries"
         private const val KEY_BATCH_SIZE = "batch_size"
-
-        fun parsePackages(raw: String): Set<String> {
-            return raw.split(',', '\n', ';')
-                .map { it.trim() }
-                .filter { it.isNotEmpty() }
-                .toSet()
-        }
     }
 }
