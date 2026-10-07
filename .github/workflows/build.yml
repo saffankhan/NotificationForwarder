@@ -61,11 +61,14 @@ jobs:
           retention-days: 30
 
       - name: Send APK to Telegram
+        env:
+          BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: |
-          curl -F chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" \
+          curl -F chat_id="$CHAT_ID" \
                -F document=@"${{ env.APK_PATH }}" \
                -F caption="✅ Android Notification Forwarder APK successfully built! Version: ${{ env.VERSION }}" \
-               https://telegram.org{{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument
+               https://telegram.org
 
 permissions:
   contents: write
