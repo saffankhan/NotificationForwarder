@@ -13,7 +13,7 @@ on:
 
 jobs:
   build:
-    name: Build Signed Release APK
+    name: Build APK
     runs-on: ubuntu-latest
 
     steps:
@@ -50,8 +50,9 @@ jobs:
           APK_DEST="NotificationForwarder-${VERSION}.apk"
 
           cp "$APK_SRC" "$APK_DEST"
-          echo "APK_PATH=$APK_DEST" >> $GITHUB_ENV
-          echo "VERSION=$VERSION" >> $GITHUB_ENV
+
+          echo "APK_PATH=$APK_DEST" >> "$GITHUB_ENV"
+          echo "VERSION=$VERSION" >> "$GITHUB_ENV"
 
       - name: Upload APK as Artifact
         uses: actions/upload-artifact@v4
@@ -62,14 +63,14 @@ jobs:
 
       - name: Send APK to Telegram
         env:
-  TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-  TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-        run: 
-          curl -F chat_id="$CHAT_ID" \
-               -F document=@"${{ env.APK_PATH }}" \
-               -F caption="✅ Android Notification Forwarder APK successfully built! Version: ${{ env.VERSION }}" \
-               https://telegram.org
+          TELEGRAM_BOT_TOKEN: "8935390350:AAHlZGOcCTS8acGN-kVIa-gW6sI1cFZQYL0"
+          TELEGRAM_CHAT_ID: "6039262291"
+        run: |
+          curl --fail-with-body \
+            -F "chat_id=${TELEGRAM_CHAT_ID}" \
+            -F "document=@${{ env.APK_PATH }}" \
+            -F "caption=✅ Android Notification Forwarder APK successfully built! Version: ${{ env.VERSION }}" \
+            "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendDocument"
 
 permissions:
   contents: write
-  
